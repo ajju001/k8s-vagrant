@@ -2,6 +2,7 @@
 # vi: set ft=ruby :
 
 BOX_IMAGE = "centos/7"
+BOX_VERSION = "1804.02"
 SETUP_MASTER = true
 SETUP_NODES = true
 NODE_COUNT = 2
@@ -36,6 +37,7 @@ NODE
 
 Vagrant.configure("2") do |config|
   config.vm.box = BOX_IMAGE
+  config.vm.box_version = BOX_VERSION
   config.vm.box_check_update = false
 
   config.vm.provider "virtualbox" do |v|
