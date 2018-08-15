@@ -10,7 +10,7 @@ cd k8s-vagrant
 vagrant up
 ```
 
-# Using the cluster from your local machine
+## Using the cluster from your local machine
 
 Copy the config from the master to your local machine
 
