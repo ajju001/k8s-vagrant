@@ -5,13 +5,14 @@ BOX_IMAGE = "centos/7"
 BOX_VERSION = "1804.02"
 SETUP_MASTER = true
 SETUP_NODES = true
-NODE_COUNT = 2
+NODE_COUNT = 1
 MASTER_IP = "192.168.11.10"
 NODE_IP = "192.168.11."
+K8S_DASHBOARD = true
 
 TOKEN = "zt6k1w.nxvhgrzj9jqg0g6n"
 
-$master_script = <<MASTER
+$master_script = <<MASTERSCRIPT
 # Initialize the master
 kubeadm reset --force
 kubeadm init --apiserver-advertise-address=#{MASTER_IP} --token #{TOKEN} --token-ttl 0
@@ -24,14 +25,19 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 # Setup the container network
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
-MASTER
+MASTERSCRIPT
 
-$node_script = <<NODE
+$node_script = <<NODESCRIPT
 # Register node to master
 kubeadm reset --force
 kubeadm join #{MASTER_IP}:6443 --token #{TOKEN} --discovery-token-unsafe-skip-ca-verification
+NODESCRIPT
 
-NODE
+$k8s_dashboard_script= <<K8SDASHSCRIPT
+# Deploy k8s dashboard
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+kubectl apply -f /vagrant/yaml/admin-user.yaml
+K8SDASHSCRIPT
 
 Vagrant.configure("2") do |config|
   config.vm.box = BOX_IMAGE
@@ -53,6 +59,9 @@ Vagrant.configure("2") do |config|
         s.args = [MASTER_IP, master.vm.hostname]
       end
       master.vm.provision :shell, inline: $master_script
+      if K8S_DASHBOARD
+        master.vm.provision :shell, inline: $k8s_dashboard_script
+      end
     end
   end
 
