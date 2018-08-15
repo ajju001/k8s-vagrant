@@ -17,6 +17,7 @@ kubeadm reset --force
 kubeadm init --apiserver-advertise-address=#{MASTER_IP} --token #{TOKEN} --token-ttl 0
 
 # Copy config files
+sudo chmod 644 /etc/kubernetes/admin.conf
 mkdir -p $HOME/.kube
 sudo cp -Rf /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
