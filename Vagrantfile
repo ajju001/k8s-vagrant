@@ -30,9 +30,6 @@ $node_script = <<NODE
 kubeadm reset --force
 kubeadm join #{MASTER_IP}:6443 --token #{TOKEN} --discovery-token-unsafe-skip-ca-verification
 
-# See https://stackoverflow.com/questions/39869583/how-to-get-kube-dns-working-in-vagrant-cluster-using-kubeadm-and-weave
-yum install net-tools -y
-route add 10.96.0.1 gw #{MASTER_IP}
 NODE
 
 Vagrant.configure("2") do |config|
@@ -63,11 +60,14 @@ Vagrant.configure("2") do |config|
       config.vm.define "node#{i}" do |node|
         node.vm.hostname = "node#{i}.k8s"
         node.vm.network "private_network", ip: NODE_IP + "#{i + 10}"
+        node.vm.provision :shell, inline: $node_script
+
+        # See https://stackoverflow.com/questions/39869583/how-to-get-kube-dns-working-in-vagrant-cluster-using-kubeadm-and-weave
         node.vm.provision "shell" do |s|
           s.inline = "sed 's/127.0.0.1.*'$2'/'$1' '$2'/' -i /etc/hosts"
           s.args = [NODE_IP + "#{i + 10}", node.vm.hostname]
         end
-        node.vm.provision :shell, inline: $node_script
+        node.vm.provision :shell, :inline => "route add 10.96.0.1 gw #{MASTER_IP}", run: "always"
       end
     end
   end

@@ -20,7 +20,7 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
 EOF
 
 # Install docker, kubelet, kubeadm, kubectl, and kubenetes-cni
-yum install -y docker kubelet kubeadm kubectl kubernetes-cni
+yum install -y docker kubelet kubeadm kubectl kubernetes-cni net-tools
 systemctl enable docker && systemctl start docker
 systemctl enable kubelet && systemctl start kubelet
 
