@@ -36,4 +36,4 @@ kubectl -n kube-system describe secret `kubectl -n kube-system get secret | grep
 ```
 
 Now copy the token and paste it into `Enter token` field on log in screen and click `Sign In` button.
-[Imgur](https://i.imgur.com/JH1CFrx.png)
+![Imgur](https://i.imgur.com/JH1CFrx.png)
